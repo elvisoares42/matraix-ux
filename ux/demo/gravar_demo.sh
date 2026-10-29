@@ -1,0 +1,16 @@
+#!/bin/zsh
+# Grava o vídeo de demonstração do README: sessão roteirizada na Elvis Design (loja fictícia) + voz + legenda + cortes.
+# A voz usa a OpenAI: rode com a chave só no ambiente do terminal (nunca em arquivo do repositório):
+#   export OPENAI_API_KEY=...   (digite você mesmo)
+#   ux/demo/gravar_demo.sh
+# Precisa de: pip install playwright imageio-ffmpeg httpx pyyaml && python -m playwright install chromium
+set -e
+cd "$(dirname "$0")/../.."
+PY=${PYTHON:-python3}
+TRAB=$(mktemp -d)
+mkdir -p "$TRAB/083265"
+TELA_PORTA=${TELA_PORTA:-8812} TELA_SAIDA="$TRAB/083265" "$PY" ux/demo/sessao_demo.py
+"$PY" ux/montar_video.py "$TRAB" --personas persona/datasets/brasil-quali-exemplo
+mkdir -p docs/ux
+cp "$TRAB"/videos/083265_*.mp4 docs/ux/demo-loja-exemplo.mp4
+echo "Vídeo: docs/ux/demo-loja-exemplo.mp4"

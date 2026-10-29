@@ -1,0 +1,124 @@
+{
+ "kind": "brasil-quali-exemplo",
+ "count": 7,
+ "seed": 20261029,
+ "schema_version": "1.0",
+ "smoke_persona_id": "029926",
+ "dimension_count": 25,
+ "dimension_ids": [
+  "age_bracket",
+  "gender_identity",
+  "region",
+  "primary_language",
+  "lang_portuguese",
+  "uf",
+  "regiao",
+  "cor_raca",
+  "sexo",
+  "idade",
+  "ano_nascimento",
+  "geracao",
+  "situacao_domicilio",
+  "instrucao",
+  "renda_per_capita",
+  "deficiencia",
+  "tipos_dificuldade",
+  "internet_em_casa",
+  "usa_internet",
+  "internet_so_celular",
+  "negra",
+  "quilombola",
+  "orientacao_sexual",
+  "identidade_genero",
+  "testavel"
+ ],
+ "source_counts": {
+  "personas-sinteticas-ux": 7
+ },
+ "personas": [
+  {
+   "persona_id": "029926",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_029926.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Paulo Gomes",
+   "dimensions": {
+    "age_bracket": "35-44",
+    "gender_identity": "Man",
+    "regiao": "Norte",
+    "geracao": "geração Y (millennials)"
+   }
+  },
+  {
+   "persona_id": "032681",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_032681.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Antônio Barbosa",
+   "dimensions": {
+    "age_bracket": "65+",
+    "gender_identity": "Man",
+    "regiao": "Nordeste",
+    "geracao": "geração silenciosa"
+   }
+  },
+  {
+   "persona_id": "049580",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_049580.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Francisco Ferreira",
+   "dimensions": {
+    "age_bracket": "55-64",
+    "gender_identity": "Man",
+    "regiao": "Sudeste",
+    "geracao": "geração baby boomer"
+   }
+  },
+  {
+   "persona_id": "049597",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_049597.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Ana Lopes",
+   "dimensions": {
+    "age_bracket": "18-24",
+    "gender_identity": "Woman",
+    "regiao": "Nordeste",
+    "geracao": "geração Z"
+   }
+  },
+  {
+   "persona_id": "069500",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_069500.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "José Moreira",
+   "dimensions": {
+    "age_bracket": "55-64",
+    "gender_identity": "Man",
+    "regiao": "Sudeste",
+    "geracao": "geração X"
+   }
+  },
+  {
+   "persona_id": "083265",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_083265.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Cristiane Freitas",
+   "dimensions": {
+    "age_bracket": "25-34",
+    "gender_identity": "Woman",
+    "regiao": "Nordeste",
+    "geracao": "geração Y (millennials)"
+   }
+  },
+  {
+   "persona_id": "083299",
+   "path": "persona/datasets/brasil-quali-exemplo/persona_083299.yaml",
+   "source": "personas-sinteticas-ux",
+   "display_name": "Luiz Rodrigues",
+   "dimensions": {
+    "age_bracket": "35-44",
+    "gender_identity": "Man",
+    "regiao": "Sudeste",
+    "geracao": "geração X"
+   }
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+schemaVersion: "1.0"
+id: ux_formulario_exemplo_v1
+title: Avaliação do app Elvis Design
+description: SUS (System Usability Scale), NPS e perguntas abertas sobre a compra.
+questions:
+  - id: sus_01
+    prompt: "Eu acho que gostaria de usar este app com frequência. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_01
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_02
+    prompt: "Eu achei o app desnecessariamente complexo. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_02
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_03
+    prompt: "Eu achei o app fácil de usar. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_03
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_04
+    prompt: "Eu acho que precisaria da ajuda de uma pessoa com conhecimentos técnicos para usar o app. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_04
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_05
+    prompt: "Eu achei que as várias funções do app estão bem integradas. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_05
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_06
+    prompt: "Eu achei que o app tem muitas inconsistências. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_06
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_07
+    prompt: "Eu imagino que a maioria das pessoas aprenderia a usar este app rapidamente. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_07
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_08
+    prompt: "Eu achei o app muito complicado de usar. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_08
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_09
+    prompt: "Eu me senti muito confiante usando o app. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_09
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: sus_10
+    prompt: "Eu precisei aprender várias coisas antes de conseguir usar o app. (1 = discordo totalmente, 5 = concordo totalmente)"
+    type: likert
+    construct: sus_item_10
+    required: true
+    minValue: 1
+    maxValue: 5
+  - id: nps
+    prompt: "De 0 a 10, o quanto você recomendaria a Elvis Design para um amigo ou familiar?"
+    type: likert
+    construct: nps
+    required: true
+    minValue: 0
+    maxValue: 10
+  - id: maior_problema
+    prompt: "Qual destas coisas mais atrapalhou a compra?"
+    type: single_choice
+    construct: maior_problema
+    required: true
+    options:
+      - id: cep
+        label: O erro no CEP sem explicar o formato.
+      - id: botao
+        label: O botão Continuar parecer desativado.
+      - id: frete
+        label: O frete aparecer só no fim.
+      - id: pix
+        label: O Pix não avisar que o código foi copiado.
+      - id: prazo
+        label: Não saber o prazo de entrega.
+      - id: nada
+        label: Nada atrapalhou de verdade.
+  - id: comentario
+    prompt: "Em uma ou duas frases, o que você mudaria no app?"
+    type: free_text
+    construct: sugestao
+    required: true

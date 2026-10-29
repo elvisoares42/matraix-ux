@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "contextRules": [
+    {
+      "match": {"contextType": "user_feedback"},
+      "distributions": [
+        {"id": "user_feedback.rating_by_segment", "facetKey": "overall_experience_rating", "title": "Nota da experiência"}
+      ]
+    }
+  ]
+}

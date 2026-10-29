@@ -315,3 +315,7 @@ environment/runtime/harbor/viewer/static/assets/*.map
 **/.playground_sidecar/
 site/
 .cache/
+
+# fork UX
+.termos-proibidos
+!application/tasks/ux-*/input/site/

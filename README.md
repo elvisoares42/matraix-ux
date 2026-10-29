@@ -1,3 +1,51 @@
+# MatrAIx UX · Personas Sintéticas UX
+
+**Teste de usabilidade com personas sintéticas brasileiras, do jeito que designers trabalham:** a persona navega no
+seu protótipo de verdade, pensa em voz alta, tem a sessão gravada em vídeo com voz e legenda, e aponta os problemas
+que encontrou. E, quando você precisa de volume, centenas de personas respondem um formulário.
+
+Este repositório é um **fork do [MatrAIx](https://github.com/MatrAIx-ai/MatrAIx)**, otimizado para testes de UX por
+**[Elvis Soares](https://elvis.work/)**.
+
+[![Telas da loja fictícia Elvis Design usada no exemplo](docs/ux/telas-loja-exemplo.png)](docs/ux/demo-loja-exemplo.mp4)
+
+▶️ **[Assista à demonstração](docs/ux/demo-loja-exemplo.mp4)**: uma persona (Cristiane, 27 anos, Pernambuco) compra um fone
+na loja fictícia Elvis Design, tropeça no CEP, se surpreende com o frete e paga com Pix.
+*Demonstração roteirizada para mostrar o formato do vídeo; numa rodada real, quem decide cada passo e cada fala é a IA.*
+
+## O que o fork acrescenta
+
+| | O que faz | Onde |
+|---|---|---|
+| 📱 | **Navega no navegador de verdade**, como um dedo e um par de olhos: só toca no que está visível, precisa olhar antes de tocar, não recebe dicas | [`ux/tela.py`](ux/tela.py) |
+| 🗣️ | **Pensa em voz alta** o tempo todo: lê a tela, diz o que espera, o que estranhou e por quê, como num teste moderado | [protocolo na tarefa](application/tasks/ux-web_loja-exemplo/instruction.md) |
+| 🎬 | **Grava vídeo e áudio** da sessão, com a voz da persona (tom por idade), legenda e a faixa "SIMULAÇÃO" | [`ux/montar_video.py`](ux/montar_video.py) |
+| ✂️ | **Corta os trechos parados**, quando a IA está pensando e não fala nem mexe na tela | [`ux/montar_video.py`](ux/montar_video.py) |
+| 🧑‍🦳 | **Usa o celular do jeito de cada perfil**: quem só usa celular, quem tem pouca familiaridade, quem tem dificuldade para enxergar | [protocolo na tarefa](application/tasks/ux-web_loja-exemplo/instruction.md) |
+| 🐞 | **Encontra problemas reais** e diz onde estão, com gravidade; a SEQ adaptada mede cada etapa | [tarefa de exemplo](application/tasks/ux-web_loja-exemplo/README.md) |
+| 📋 | **Formulário em escala**: SUS, NPS e perguntas abertas para centenas de personas | [tarefa de formulário](application/tasks/ux-survey_formulario-exemplo/) |
+| 🇧🇷 | **100 mil personas brasileiras** calibradas com IBGE (Censo 2022, PNAD TIC 2025, PNS 2019), também no Hugging Face | [`ux/personas_para_matraix.py`](ux/personas_para_matraix.py) |
+
+**Comece por aqui:** [docs/ux/COMO-USAR.md](docs/ux/COMO-USAR.md), com o passo a passo, o **custo médio por teste**
+(usabilidade com vídeo e voz: ~US$ 6,50 para 7 personas; formulário: ~US$ 0,40 para 400) e **prompts prontos** para
+rodar tudo com Claude Code, GitHub Copilot, Cursor, Codex e outras IAs de código.
+
+## Créditos
+
+- **Plataforma:** todo o crédito do MatrAIx é da sua equipe. Li, X., Hao, Y., Hou, J., Huang, J., Wen, Q., Huang, S.,
+  Liu, Y., Liu, X., Fan, Y., Wang, Y., Wu, K. et al. *MatrAIx: Simulating the World with 8.3 Billion Persona Agents.*
+  arXiv:2608.04205, 2026. [matraix.ai](https://matraix.ai) · licença MIT.
+- **Fork UX e base Personas Sintéticas UX:** [Elvis Soares](https://elvis.work/). Tela com pensar em voz alta, vídeo com voz,
+  corte de silêncios, protocolo de teste de usabilidade, tarefas de exemplo e personas brasileiras.
+- **Dados:** IBGE (Censo 2022, PNAD Contínua TIC 2025, PNS 2019); identidade de gênero: Spizzirri et al., *Scientific Reports*, 2021.
+
+Para atualizar com o MatrAIx original: `git fetch upstream && git merge upstream/main`.
+
+---
+
+<details>
+<summary><b>README original do MatrAIx</b></summary>
+
 <div align="center">
   <h1>MatrAIx</h1>
   <p><strong>Simulate before reality.</strong></p>
@@ -285,3 +333,5 @@ Dataset: [Persona 1M on Hugging Face](https://huggingface.co/datasets/MatrAIx202
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+</details>
