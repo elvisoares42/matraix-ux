@@ -6,6 +6,9 @@
 #   UX_VOZ=basica ux/demo/gravar_demo.sh   (voz básica, centavos)
 # Precisa de: pip install playwright imageio-ffmpeg httpx pyyaml && python -m playwright install chromium
 set -e
+# chave opcional num arquivo fora do repositório (nunca dentro do projeto)
+[[ -z "${OPENAI_API_KEY:-}" && -f ~/.config/matraix-ux/chave.env ]] && source ~/.config/matraix-ux/chave.env
+[[ -n "${OPENAI_API_KEY:-}" ]] && echo "Chave da OpenAI encontrada: o vídeo sai com voz." || echo "Sem chave da OpenAI: o vídeo sai só com legenda."
 cd "$(dirname "$0")/../.."
 PY=${PYTHON:-python3}
 TRAB=$(mktemp -d)

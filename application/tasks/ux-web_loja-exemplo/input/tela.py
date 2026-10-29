@@ -187,6 +187,18 @@ def servidor() -> None:
             estado["ctx"] = nav.new_context(viewport={"width": LARGURA, "height": ALTURA}, has_touch=True,
                                             record_video_dir=str(SAIDA / "video" / "_bruto"),
                                             record_video_size={"width": LARGURA, "height": ALTURA}, locale="pt-BR")
+            # o gravador do navegador só recebe quadros quando a tela muda; sem isso, os trechos parados
+            # encolhem no vídeo e a voz e a legenda saem adiantadas. Um ponto invisível animado mantém
+            # os quadros chegando em tempo real (não aparece no ver() nem recebe toques).
+            estado["ctx"].add_init_script("""document.addEventListener('DOMContentLoaded', () => {
+                const p = document.createElement('div');
+                p.setAttribute('aria-hidden', 'true');
+                p.style.cssText = 'position:fixed;left:0;bottom:0;width:2px;height:2px;pointer-events:none;'
+                  + 'z-index:2147483647;animation:_rel 1s steps(25) infinite';
+                const s = document.createElement('style');
+                s.textContent = '@keyframes _rel{from{background:rgba(0,0,0,.01)}to{background:rgba(0,0,0,.02)}}';
+                document.head.appendChild(s); document.body.appendChild(p);
+            });""")
             estado["page"] = estado["ctx"].new_page()
             estado["inicio"] = time.time()
         return estado["page"]

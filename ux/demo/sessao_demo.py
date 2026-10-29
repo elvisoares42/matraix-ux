@@ -58,7 +58,12 @@ t.falar("Hmm... copiou? Não apareceu nenhum aviso. Vou confiar e dizer que já 
 t.tocar("Já fiz o pagamento")
 t.ver()
 t.falar("Pedido recebido, com o número. Mas não fala quando chega. Eu ia ficar ansiosa esperando.")
-t.falar("No geral foi fácil escolher, mas o erro do CEP e o frete surpresa me deixaram insegura.")
+t.falar("Bom, recapitulando: escolhi o fone, preenchi a entrega, paguei com Pix e o pedido foi recebido.")
+t.falar("O que eu gostei: a loja é bonita, as fotos e os preços são claros, e o Pix com QR Code é rapidinho.")
+t.falar("O que foi ruim: o CEP com tracinho deu erro sem explicar, o botão Continuar parecia desligado, "
+        "o frete só apareceu no final, o copiar não avisou nada e não sei quando o fone chega.")
+t.falar("Se fosse eu, mostrava o frete já na página do produto, aceitava o CEP de qualquer jeito "
+        "e colocava o prazo de entrega na confirmação. Aí eu comprava de novo, tranquila.")
 t.encerrar()
 
 saida = Path(os.environ.get("TELA_SAIDA", "/app/output"))

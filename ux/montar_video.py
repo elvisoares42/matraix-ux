@@ -121,16 +121,31 @@ MODELO_VOZ = os.environ.get("UX_MODELO_VOZ") or {"melhorada": "gpt-audio-1.5", "
 USO_VOZ = {"audio_tokens": 0, "text_tokens_saida": 0, "tokens_entrada": 0, "falas": 0, "segundos_audio": 0.0}
 
 
+def _post(url: str, corpo: dict) -> httpx.Response:
+    """Chamada à OpenAI com novas tentativas quando a API demora ou recusa por excesso de pedidos."""
+    import time
+    for tentativa in range(4):
+        try:
+            r = httpx.post(url, headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, json=corpo, timeout=300)
+            if r.status_code in (429, 500, 502, 503, 504) and tentativa < 3:
+                time.sleep(5 * (tentativa + 1))
+                continue
+            r.raise_for_status()
+            return r
+        except (httpx.TimeoutException, httpx.TransportError):
+            if tentativa == 3:
+                raise
+            time.sleep(5 * (tentativa + 1))
+    raise RuntimeError("a OpenAI não respondeu")
+
+
 def gerar_voz(texto: str, voz: str, instrucoes: str, destino: Path) -> None:
     """Fala da persona em áudio, lida palavra por palavra (sem inventar nada)."""
     if destino.exists() or SEM_VOZ:
         return
     if VOZ_NIVEL == "basica":
-        r = httpx.post("https://api.openai.com/v1/audio/speech",
-                       headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, timeout=180,
-                       json={"model": MODELO_VOZ, "voice": voz, "input": texto, "instructions": instrucoes,
-                             "response_format": "mp3"})
-        r.raise_for_status()
+        r = _post("https://api.openai.com/v1/audio/speech",
+                  {"model": MODELO_VOZ, "voice": voz, "input": texto, "instructions": instrucoes, "response_format": "mp3"})
         destino.write_bytes(r.content)
         USO_VOZ["falas"] += 1
         USO_VOZ["segundos_audio"] += duracao(destino)
@@ -145,9 +160,7 @@ def gerar_voz(texto: str, voz: str, instrucoes: str, destino: Path) -> None:
         ],
     }
     for _ in range(2):
-        r = httpx.post("https://api.openai.com/v1/chat/completions",
-                       headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, json=corpo, timeout=180)
-        r.raise_for_status()
+        r = _post("https://api.openai.com/v1/chat/completions", corpo)
         d = r.json()
         audio = d["choices"][0]["message"]["audio"]
         u = d.get("usage", {})
