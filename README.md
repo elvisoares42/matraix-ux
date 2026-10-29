@@ -27,7 +27,7 @@ na loja fictícia Elvis Design, tropeça no CEP, se surpreende com o frete e pag
 | 🇧🇷 | **100 mil personas brasileiras** calibradas com IBGE (Censo 2022, PNAD TIC 2025, PNS 2019), também no Hugging Face | [`ux/personas_para_matraix.py`](ux/personas_para_matraix.py) |
 
 **Comece por aqui:** [docs/ux/COMO-USAR.md](docs/ux/COMO-USAR.md), com o passo a passo, o **custo médio por teste**
-(usabilidade com vídeo e voz: ~US$ 6,50 para 7 personas; formulário: ~US$ 0,40 para 400) e **prompts prontos** para
+(teste de usabilidade com 5 personas e vídeo: **~US$ 2,20** com voz básica ou **~US$ 4,50** com voz melhorada; formulário com 400 personas: **~US$ 0,40**) e **prompts prontos** para
 rodar tudo com Claude Code, GitHub Copilot, Cursor, Codex e outras IAs de código.
 
 ## Créditos

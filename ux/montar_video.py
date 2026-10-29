@@ -7,12 +7,15 @@ Entrada, por tentativa do job (artifacts/app/output/):
 Saída: resultados/videos/<job>/<persona>.mp4, com o aviso "SIMULAÇÃO – persona sintética"
 o tempo todo (para nunca ser confundido com gravação de cliente real).
 
-A voz é gerada por um modelo de áudio da OpenAI (MODELO_VOZ), em português do Brasil, com uma voz
-compatível com o gênero e um tom compatível com a idade e a facilidade com tecnologia.
+A voz é gerada pela OpenAI, em português do Brasil, com uma voz compatível com o gênero e um tom compatível
+com a idade e a facilidade com tecnologia. Dois níveis (--voz):
+  melhorada (padrão): gpt-audio-1.5, mais natural e expressiva; ~US$ 0,40 por persona
+  basica: gpt-4o-mini-tts, mais simples e bem mais barata; centavos por persona
 Sem OPENAI_API_KEY (ou com --sem-voz), o vídeo sai só com legenda.
 
 Uso (na raiz do MatrAIx, com a chave no ambiente, nunca em arquivo versionado):
-  .venv/bin/python ux/montar_video.py jobs/<job> [--personas persona/datasets/<grupo>] [--sem-voz] [--sem-corte] [persona_id ...]
+  .venv/bin/python ux/montar_video.py jobs/<job> [--personas persona/datasets/<grupo>] [--voz basica|melhorada]
+                                       [--sem-voz] [--sem-corte] [persona_id ...]
 Por padrão corta os trechos em que a persona não fala nem mexe na tela (ex.: enquanto a IA pensa).
 Saída: <job>/videos/<persona>.mp4 e <job>/videos/custo_voz.json
 """
@@ -43,7 +46,10 @@ def _fonte(*nomes: str) -> str:
 
 FONTE = _fonte("/System/Library/Fonts/Supplemental/Arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
 FONTE_BOLD = _fonte("/System/Library/Fonts/Supplemental/Arial Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
-VOZES = {"Woman": ["marin"], "Man": ["cedar"], "Mulher": ["marin"], "Homem": ["cedar"]}
+VOZ_NIVEL = sys.argv[sys.argv.index("--voz") + 1] if "--voz" in sys.argv else os.environ.get("UX_VOZ", "melhorada")
+# vozes por gênero em cada nível (a voz básica usa as vozes do modelo de TTS)
+VOZES = {"melhorada": {"Woman": ["marin"], "Man": ["cedar"]}, "basica": {"Woman": ["coral"], "Man": ["ash"]}}[VOZ_NIVEL]
+VOZES.update({"Mulher": VOZES["Woman"], "Homem": VOZES["Man"], "Non-binary": VOZES["Woman"]})
 SEM_VOZ = "--sem-voz" in sys.argv or not os.environ.get("OPENAI_API_KEY")
 TOM_TECNOLOGIA = {
     "Digital native": "fala rápido e com segurança, um pouco impaciente",
@@ -111,13 +117,23 @@ def duracao(arquivo: Path) -> float:
     return int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3]) if m else 0.0
 
 
-MODELO_VOZ = os.environ.get("UX_MODELO_VOZ", "gpt-audio-1.5")
-USO_VOZ = {"audio_tokens": 0, "text_tokens_saida": 0, "tokens_entrada": 0, "falas": 0}
+MODELO_VOZ = os.environ.get("UX_MODELO_VOZ") or {"melhorada": "gpt-audio-1.5", "basica": "gpt-4o-mini-tts"}[VOZ_NIVEL]
+USO_VOZ = {"audio_tokens": 0, "text_tokens_saida": 0, "tokens_entrada": 0, "falas": 0, "segundos_audio": 0.0}
 
 
 def gerar_voz(texto: str, voz: str, instrucoes: str, destino: Path) -> None:
     """Fala da persona em áudio, lida palavra por palavra (sem inventar nada)."""
     if destino.exists() or SEM_VOZ:
+        return
+    if VOZ_NIVEL == "basica":
+        r = httpx.post("https://api.openai.com/v1/audio/speech",
+                       headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, timeout=180,
+                       json={"model": MODELO_VOZ, "voice": voz, "input": texto, "instructions": instrucoes,
+                             "response_format": "mp3"})
+        r.raise_for_status()
+        destino.write_bytes(r.content)
+        USO_VOZ["falas"] += 1
+        USO_VOZ["segundos_audio"] += duracao(destino)
         return
     import base64
     corpo = {
@@ -269,6 +285,9 @@ def main() -> None:
     from concurrent.futures import ThreadPoolExecutor
 
     args = [a for a in sys.argv[1:] if a not in ("--sem-voz", "--sem-corte")]
+    if "--voz" in args:
+        i = args.index("--voz")
+        del args[i:i + 2]
     personas = None
     if "--personas" in args:
         i = args.index("--personas")
@@ -302,12 +321,14 @@ def main() -> None:
         tentativas = [raiz]
     with ThreadPoolExecutor(max_workers=4) as ex:
         list(ex.map(uma, tentativas))
-    # custo da voz pelos tokens medidos; preço do áudio estimado em US$ 64–80 por milhão de tokens
+    # custo da voz: melhorada pelos tokens medidos (áudio estimado em US$ 64–80 por milhão de tokens);
+    # básica pelos minutos de áudio (gpt-4o-mini-tts, estimado em ~US$ 0,015 por minuto)
     if USO_CORTE["antes_s"]:
         print(f"cortes: {USO_CORTE['antes_s']:.0f}s → {USO_CORTE['depois_s']:.0f}s de vídeo")
     uso = dict(USO_VOZ, modelo=MODELO_VOZ, sem_voz=SEM_VOZ,
-               custo_estimado_usd=[round(USO_VOZ["audio_tokens"] * p / 1e6 + USO_VOZ["tokens_entrada"] * 2.5 / 1e6, 3)
-                                   for p in (64, 80)])
+               custo_estimado_usd=([round(USO_VOZ["segundos_audio"] / 60 * 0.015, 3)] * 2 if VOZ_NIVEL == "basica" else
+                                   [round(USO_VOZ["audio_tokens"] * p / 1e6 + USO_VOZ["tokens_entrada"] * 2.5 / 1e6, 3)
+                                    for p in (64, 80)]))
     (pasta / "custo_voz.json").write_text(json.dumps(uso, ensure_ascii=False, indent=1), encoding="utf-8")
     print("voz:", uso)
 

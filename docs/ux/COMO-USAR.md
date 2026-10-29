@@ -24,8 +24,8 @@ Guia prático para designers. Você pode seguir os comandos à mão ou **pedir p
 O grupo de personas é quem participa do teste. O conversor sorteia da base, na proporção do Brasil:
 
 ```bash
-# teste qualitativo: 7 personas, uma mistura de gerações
-uv run python ux/personas_para_matraix.py personas.jsonl --nome meu-quali --amostra 7
+# teste qualitativo: 5 personas, uma mistura de gerações
+uv run python ux/personas_para_matraix.py personas.jsonl --nome meu-quali --amostra 5
 
 # formulário: 400 personas; dá para filtrar (repita --filtro para combinar)
 uv run python ux/personas_para_matraix.py personas.jsonl --nome meu-quanti --amostra 400 --filtro regiao=Nordeste
@@ -40,12 +40,13 @@ Campos úteis para filtro: `uf`, `regiao`, `geracao`, `sexo`, `cor_raca`, `negra
 ```bash
 uv run python application/scripts/generate_application_job.py \
   --task application/tasks/ux-web_loja-exemplo \
-  --execution-mode auto --dataset persona/datasets/meu-quali --sample-size 7 \
+  --execution-mode auto --dataset persona/datasets/meu-quali --sample-size 5 \
   --model-name openai/gpt-5.4
 uv run matraix run -c configs/jobs/application-task-job-recipe/<arquivo-que-o-comando-mostrar>.yaml
 
 # vídeo de cada persona: tela + voz + legenda, sem os trechos parados
-uv run python ux/montar_video.py jobs/<job> --personas persona/datasets/meu-quali
+uv run python ux/montar_video.py jobs/<job> --personas persona/datasets/meu-quali                # voz melhorada
+uv run python ux/montar_video.py jobs/<job> --personas persona/datasets/meu-quali --voz basica   # voz básica, mais barata
 ```
 
 Cada persona olha a tela, toca, digita, rola e **pensa em voz alta**. Ao fim de cada etapa responde à **SEQ adaptada**
@@ -79,20 +80,23 @@ e `input/context.md`.
 
 ## 5. Quanto custa (valores médios medidos)
 
-Medido em rodadas reais de um protótipo de checkout no celular, em outubro de 2026. O custo muda com o modelo,
-o tamanho do protótipo e quanto a persona fala.
+Medido em rodadas reais de um protótipo de checkout no celular, em outubro de 2026, com **5 personas por rodada**
+(3 rodadas de usabilidade com o gpt-5.4). O custo muda com o modelo, o tamanho do protótipo e quanto a persona fala.
 
-| Teste | Modelo | Por persona | Por teste |
+| Teste com 5 personas | Sessões (gpt-5.4) | Voz do vídeo | **Total por teste** |
 |---|---|---|---|
-| Usabilidade com pensar em voz alta | gpt-5.4 | **US$ 0,50** (0,36 a 0,85; 22 sessões) | 7 personas: **~US$ 3,50** |
-| Voz do vídeo (dublagem das falas) | gpt-audio-1.5 | **US$ 0,42** (0,38 a 0,47) | 7 personas: **~US$ 3,00** |
-| **Usabilidade + vídeo com voz** | | **~US$ 0,92** | **7 personas: ~US$ 6,50** |
-| Usabilidade, modelo barato | gpt-5.4-mini | US$ 0,14 (0,09 a 0,37) | não recomendado: personas "trapacearam" (rodaram JavaScript, leram o código) |
-| Formulário | gpt-4o-mini | ~US$ 0,001 | 400 personas: **US$ 0,15 a 0,40** |
+| **Usabilidade + vídeo com voz básica** (`--voz basica`, gpt-4o-mini-tts) | US$ 2,20 a 2,75 | centavos | **~US$ 2,20** |
+| **Usabilidade + vídeo com voz melhorada** (padrão, gpt-audio-1.5) | US$ 2,20 a 2,75 | US$ 1,70 a 2,70 | **~US$ 4,50** |
+| Usabilidade sem voz (vídeo só com legenda, `--sem-voz`) | US$ 2,20 a 2,75 | — | ~US$ 2,20 |
+| **Formulário com 400 personas** (gpt-4o-mini) | — | — | **US$ 0,15 a 0,40** |
 
-No formulário, modelos pequenos tendem a dar notas parecidas para todo mundo (o "meio-termo seguro"). Para notas
-mais diferenciadas, use um modelo maior: o custo sobe, ainda bem abaixo de uma pesquisa de campo.
-Dá para pôr um teto: `matraix run -c <arquivo>.yaml --max-cost-usd 10`.
+- Por persona, a sessão de usabilidade custa em média **US$ 0,50** (de 0,36 a 0,85, em 22 sessões).
+- A voz melhorada é mais natural e expressiva, boa para apresentar a stakeholders. A básica serve para o dia a dia da equipe.
+- **Modelo barato na usabilidade** (gpt-5.4-mini, ~US$ 0,14 por persona): não recomendado. Nas nossas rodadas, personas
+  "trapacearam" (rodaram JavaScript, leram o código da página).
+- **Formulário**: modelos pequenos tendem a dar notas parecidas para todo mundo (o "meio-termo seguro"). Para notas mais
+  diferenciadas, use um modelo maior: o custo sobe, mas fica bem abaixo de uma pesquisa de campo.
+- Dá para pôr um teto em qualquer rodada: `matraix run -c <arquivo>.yaml --max-cost-usd 10`.
 
 ## 6. Ler os resultados
 
@@ -134,9 +138,9 @@ Escreva no README da tarefa um gabarito com os problemas que você já vê no pr
 
 **Rodar o teste qualitativo com vídeo**
 ```text
-Monte um grupo de 7 personas da base personas.jsonl (ux/personas_para_matraix.py, estratificado por geração),
+Monte um grupo de 5 personas da base personas.jsonl (ux/personas_para_matraix.py, estratificado por geração),
 rode a tarefa application/tasks/<minha-tarefa> com o modelo openai/gpt-5.4 e um teto de US$ 10,
-e depois monte os vídeos com ux/montar_video.py. No fim, me mostre uma tabela por persona com resultado,
+e depois monte os vídeos com ux/montar_video.py (voz básica; use a melhorada só se eu pedir). No fim, me mostre uma tabela por persona com resultado,
 SEQ de cada etapa e os problemas encontrados, e compare com o gabarito do README da tarefa.
 ```
 
