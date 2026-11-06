@@ -58,7 +58,6 @@ TOM_TECNOLOGIA = {
     "Reluctant": "fala hesitante, insegura com tecnologia, às vezes perdida",
     "Avoidant": "fala bem devagar, desconfortável e confusa com o celular",
 }
-LARG, ALT = 390, 844
 # Corte de trechos parados: mantém fala e ações (com folga para ver o resultado) e encurta o resto.
 SEM_CORTE = "--sem-corte" in sys.argv
 PAUSA_MAX = 0.8          # s de tela parada mantidos entre dois trechos úteis
@@ -97,7 +96,7 @@ def cortar_parados(arquivo: Path, intervalos: list[tuple[float, float]], total: 
     cond = "+".join(f"between(t,{a:.2f},{b:.2f})" for a, b in intervalos)
     saida = arquivo.with_name(arquivo.stem + "_cortado.mp4")
     r = ffmpeg("-i", str(arquivo), "-vf", f"select='{cond}',setpts=N/FRAME_RATE/TB",
-               "-af", f"aselect='{cond}',asetpts=N/SR/TB", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "25",
+               "-af", f"aselect='{cond}',asetpts=N/SR/TB", "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", "-r", "25",
                "-c:a", "aac", "-ar", "44100", "-ac", "1", str(saida))
     if r.returncode != 0:
         raise RuntimeError(r.stderr[-2000:])
@@ -175,9 +174,25 @@ def gerar_voz(texto: str, voz: str, instrucoes: str, destino: Path) -> None:
     destino.write_bytes(base64.b64decode(audio["data"]))
 
 
-def legenda(texto: str, pasta: Path, n: int) -> Path:
+def dimensoes(arquivo: Path) -> tuple[int, int]:
+    """Largura e altura da gravação (celular em pé ou computador deitado)."""
+    saida = subprocess.run([FFMPEG, "-hide_banner", "-i", str(arquivo)], capture_output=True, text=True).stderr
+    m = re.search(r"Video:.*?, (\d{3,5})x(\d{3,5})", saida)
+    return (int(m[1]), int(m[2])) if m else (390, 844)
+
+
+def estilo_legenda(larg: int, alt: int) -> tuple[int, int, str]:
+    """Tamanho da letra, colunas e posição da legenda para celular, tablet ou computador."""
+    if larg > alt:  # computador: na coluna esquerda, sem cobrir o botão do teste nem o protótipo à direita
+        return 22, 52, "x=32:y=h-th-110"
+    if larg >= 600:  # tablet
+        return 22, 60, "x=(w-tw)/2:y=h-th-40"
+    return 17, 34, "x=(w-tw)/2:y=h-th-40"  # celular
+
+
+def legenda(texto: str, pasta: Path, n: int, colunas: int = 34) -> Path:
     arq = pasta / f"legenda_{n:03d}.txt"
-    arq.write_text("\n".join(textwrap.wrap(texto, 34)), encoding="utf-8")
+    arq.write_text("\n".join(textwrap.wrap(texto, colunas)), encoding="utf-8")
     return arq
 
 
@@ -204,7 +219,9 @@ def montar_segmento(video: Path, falas: list[dict], perfil: dict, voz: str, trab
     for mp3, *_ in pistas:
         if mp3:
             entradas += ["-i", str(mp3)]
-    filtros = [f"[0:v]scale={LARG}:{ALT},tpad=stop_mode=clone:stop_duration={max(0.0, total - dur_video):.2f}"]
+    larg, alt = dimensoes(video)
+    corpo, colunas, onde = estilo_legenda(larg, alt)
+    filtros = [f"[0:v]scale={larg}:{alt},tpad=stop_mode=clone:stop_duration={max(0.0, total - dur_video):.2f}"]
     texto_aviso = trab / "aviso.txt"
     texto_aviso.write_text("SIMULAÇÃO – persona sintética", encoding="utf-8")
     nome = trab / "nome.txt"
@@ -213,10 +230,10 @@ def montar_segmento(video: Path, falas: list[dict], perfil: dict, voz: str, trab
                    f",drawtext=fontfile='{FONTE_BOLD}':textfile='{texto_aviso}':fontcolor=yellow:fontsize=17:x=(w-tw)/2:y=8"
                    f",drawtext=fontfile='{FONTE}':textfile='{nome}':fontcolor=white:fontsize=14:x=(w-tw)/2:y=32")
     for i, (_, ini, dur, fala) in enumerate(pistas):
-        arq = legenda(fala, trab, seg * 1000 + i)
-        filtros[0] += (f",drawtext=fontfile='{FONTE}':textfile='{arq}':fontcolor=white:fontsize=17"
+        arq = legenda(fala, trab, seg * 1000 + i, colunas)
+        filtros[0] += (f",drawtext=fontfile='{FONTE}':textfile='{arq}':fontcolor=white:fontsize={corpo}"
                        f":line_spacing=4:box=1:boxcolor=black@0.7:boxborderw=10"
-                       f":x=(w-tw)/2:y=h-th-40:enable='between(t,{ini:.2f},{ini + dur:.2f})'")
+                       f":{onde}:enable='between(t,{ini:.2f},{ini + dur:.2f})'")
     filtros[0] += "[v]"
     com_audio = [(ini, mp3) for mp3, ini, _, _ in pistas if mp3]
     if com_audio:
@@ -306,7 +323,7 @@ def main() -> None:
         i = args.index("--personas")
         personas = Path(args[i + 1])
         del args[i:i + 2]
-    raiz, so = Path(args[0]), set(args[1:])
+    raiz, so = Path(args[0]).resolve(), set(args[1:])  # absoluto: o ffmpeg lê lista.txt a partir da pasta dela
     perfis = carregar_perfis(personas)
     pasta = raiz / "videos"
     pasta.mkdir(parents=True, exist_ok=True)

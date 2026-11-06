@@ -1,4 +1,4 @@
-"""Tela do celular para testes de usabilidade com personas sintéticas (fork UX do MatrAIx).
+"""Tela (celular, tablet ou computador) para testes de usabilidade com personas sintéticas (fork UX do MatrAIx).
 
 Um serviço local mantém UM navegador aberto durante a sessão inteira e grava UM vídeo contínuo.
 Os scripts da persona só mandam comandos, como um dedo e um par de olhos:
@@ -39,7 +39,11 @@ from pathlib import Path
 
 PORTA = int(os.environ.get("TELA_PORTA", "8799"))  # troque se outra tela já estiver usando a porta
 SAIDA = Path(os.environ.get("TELA_SAIDA", "/app/output"))
-LARGURA, ALTURA = 390, 844
+# Largura, altura e se a tela é de toque. Escolha: arquivo dispositivo.txt ao lado deste, ou TELA_DISPOSITIVO; padrão: celular.
+DISPOSITIVOS = {"celular": (390, 844, True), "tablet": (820, 1180, True), "desktop": (1280, 800, False)}
+_arq_dispositivo = Path(__file__).with_name("dispositivo.txt")
+DISPOSITIVO = (_arq_dispositivo.read_text().strip() if _arq_dispositivo.exists() else os.environ.get("TELA_DISPOSITIVO", "celular"))
+LARGURA, ALTURA, TOQUE = DISPOSITIVOS[DISPOSITIVO]
 OCIOSO_MAX = 600  # s sem comandos: fecha e salva o vídeo sozinho
 
 
@@ -184,7 +188,7 @@ def servidor() -> None:
 
     def contexto():
         if estado["page"] is None:
-            estado["ctx"] = nav.new_context(viewport={"width": LARGURA, "height": ALTURA}, has_touch=True,
+            estado["ctx"] = nav.new_context(viewport={"width": LARGURA, "height": ALTURA}, has_touch=TOQUE,
                                             record_video_dir=str(SAIDA / "video" / "_bruto"),
                                             record_video_size={"width": LARGURA, "height": ALTURA}, locale="pt-BR")
             # o gravador do navegador só recebe quadros quando a tela muda; sem isso, os trechos parados
@@ -242,7 +246,7 @@ def servidor() -> None:
             return "Esperou."
         if acao == "abrir":
             if page.url not in ("about:blank", "") and not d.get("de_novo"):
-                return "O site já está aberto no celular."
+                return "O site já está aberto."
             page.goto(d["url"], wait_until="domcontentloaded")
             page.wait_for_timeout(2500)
             estado["olhou"] = False
@@ -333,7 +337,7 @@ def servidor() -> None:
             try:
                 resp = registrar(d)
             except Exception as e:  # noqa: BLE001  (nunca derruba a tela)
-                resp = "O celular não respondeu a esse gesto."
+                resp = "A tela não respondeu a esse gesto."
             body = json.dumps({"resposta": resp}, ensure_ascii=False).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")

@@ -53,6 +53,11 @@ Cada persona olha a tela, toca, digita, rola e **pensa em voz alta**. Ao fim de 
 (dificuldade, clareza e suficiência, de 1 a 7), aponta os **problemas encontrados** com gravidade e faz um fechamento.
 Os vídeos saem em `jobs/<job>/videos/`. Sem chave da OpenAI (ou com `--sem-voz`), saem só com legenda.
 
+### Celular, tablet ou computador
+
+A tela é de celular (390×844) por padrão. Para testar em outro aparelho, crie `input/dispositivo.txt` na tarefa com
+`tablet` (820×1180) ou `desktop` (1280×800). O vídeo sai no tamanho do aparelho, com a legenda no lugar certo.
+
 ### Testar o seu protótipo
 
 1. Copie a tarefa: `cp -R application/tasks/ux-web_loja-exemplo application/tasks/ux-web_meu-produto`.
