@@ -16,7 +16,7 @@ Guia prático para designers. Você pode seguir os comandos à mão ou **pedir p
    ```bash
    export OPENAI_API_KEY=...      # ou ANTHROPIC_API_KEY=...
    ```
-4. Baixe a base **Personas Sintéticas UX** (100 mil personas brasileiras, `personas.jsonl`) do Hugging Face
+4. Baixe a base **Personas Sintéticas UX** (100 mil personas brasileiras, `data/personas.jsonl`) do [Hugging Face](https://huggingface.co/datasets/elvisoares/personas-sinteticas-ux)
    ou gere com o projeto [personas-sinteticas](https://github.com/elvisoares42/personas-sinteticas).
 
 ## 2. Escolher as personas (o "grupo" do teste)

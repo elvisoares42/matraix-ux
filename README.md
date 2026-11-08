@@ -24,7 +24,7 @@ na loja fictícia Elvis Design, tropeça no CEP, se surpreende com o frete e pag
 | 🧑‍🦳 | **Usa o celular do jeito de cada perfil**: quem só usa celular, quem tem pouca familiaridade, quem tem dificuldade para enxergar | [protocolo na tarefa](application/tasks/ux-web_loja-exemplo/instruction.md) |
 | 🐞 | **Encontra problemas reais** e diz onde estão, com gravidade; a SEQ adaptada mede cada etapa | [tarefa de exemplo](application/tasks/ux-web_loja-exemplo/README.md) |
 | 📋 | **Formulário em escala**: SUS, NPS e perguntas abertas para centenas de personas | [tarefa de formulário](application/tasks/ux-survey_formulario-exemplo/) |
-| 🇧🇷 | **100 mil personas brasileiras** calibradas com IBGE (Censo 2022, PNAD TIC 2025, PNS 2019), também no Hugging Face | [`ux/personas_para_matraix.py`](ux/personas_para_matraix.py) |
+| 🇧🇷 | **100 mil personas brasileiras** calibradas com IBGE (Censo 2022, PNAD TIC 2025, PNS 2019), também no [Hugging Face](https://huggingface.co/datasets/elvisoares/personas-sinteticas-ux) | [`ux/personas_para_matraix.py`](ux/personas_para_matraix.py) |
 
 **Comece por aqui:** [docs/ux/COMO-USAR.md](docs/ux/COMO-USAR.md), com o passo a passo, o **custo médio por teste**
 (teste de usabilidade com 5 personas e vídeo: **~US$ 2,20** com voz básica ou **~US$ 4,50** com voz melhorada; formulário com 400 personas: **~US$ 0,40**) e **prompts prontos** para
