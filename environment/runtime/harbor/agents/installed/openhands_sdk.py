@@ -145,7 +145,8 @@ class OpenHandsSDK(BaseInstalledAgent):
                     # Versões fixadas no fork UX: a litellm mais nova importa mcp.types.CacheableResult, que não existe
                     # no mcp 1.x exigido pelo fastmcp 3.x (ImportError no openhands-sdk). Com litellm 1.90.1 o pip
                     # resolve openhands-sdk 1.37.1, e openhands-tools precisa ser da mesma versão.
-                    f"pip install openhands-sdk{version_spec or '==1.37.1'} openhands-tools{version_spec or '==1.37.1'} fastapi 'litellm==1.90.1' 'mcp==1.28.1'"
+                    # O agent-client-protocol 1.0.0 (09/11/2026) tirou acp.helpers e quebra o openhands-sdk 1.37.1.
+                    f"pip install openhands-sdk{version_spec or '==1.37.1'} openhands-tools{version_spec or '==1.37.1'} fastapi 'litellm==1.90.1' 'mcp==1.28.1' 'agent-client-protocol==0.12.1'"
                 ),
             )
 
